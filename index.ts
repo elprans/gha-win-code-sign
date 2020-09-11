@@ -7,12 +7,14 @@ import util from 'util';
 import { exec } from 'child_process';
 import { env } from 'process';
 
+const IS_WINDOWS = process.platform === 'win32'
+
 const asyncExec = util.promisify(exec);
 const certificateFileName = env['TEMP'] + '\\certificate.pfx';
 const nugetFileName = env['TEMP'] + '\\nuget.exe';
 
 const timestampUrl = 'http://timestamp.digicert.com';
-const signtool = 'C:/Program Files (x86)/Windows Kits/10/bin/10.0.17763.0/x86/signtool.exe';
+const signtool = 'signtool.exe';
 
 const signtoolFileExtensions = [
     '.dll', '.exe', '.sys', '.vxd',
@@ -61,7 +63,8 @@ async function downloadNuGet() {
 
 async function signWithSigntool(fileName: string) {
     try {
-        const { stdout } = await asyncExec(`"${signtool}" sign /f ${certificateFileName} /tr ${timestampUrl} /td sha256 /fd sha256 ${fileName}`);
+        const certificatePassword = core.getInput('certificate-password');
+        const { stdout } = await asyncExec(`"${signtool}" sign /f ${certificateFileName} /p "${certificatePassword}" /tr "${timestampUrl}" /td sha256 /fd sha256 "${fileName}"`);
         console.log(stdout);
         return true;
     } catch(err) {
@@ -75,7 +78,8 @@ async function signNupkg(fileName: string) {
     await downloadNuGet();
 
     try {
-        const { stdout } = await asyncExec(`"${nugetFileName}" sign ${fileName} -CertificatePath ${certificateFileName} -Timestamper ${timestampUrl}`);
+        const certificatePassword = core.getInput('certificate-password');
+        const { stdout } = await asyncExec(`"${nugetFileName}" sign ${fileName} -CertificatePath ${certificateFileName} -CertificatePassword ${certificatePassword} -Timestamper ${timestampUrl} -NonInteractive`);
         console.log(stdout);
         return true;
     } catch(err) {
@@ -126,6 +130,12 @@ async function signFiles() {
 }
 
 async function run() {
+    // exit if non Windows runner
+    if (IS_WINDOWS === false) {
+      core.setFailed('win-code-sign can only be run on Windows runners')
+      return
+    }
+
     try {
         if (await createCertificatePfx())
             await signFiles();

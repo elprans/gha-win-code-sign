@@ -7,6 +7,8 @@ inputs:
   certificate:
     description: 'The base64 encoded certificate.'
     required: true
+  certificate-password:
+    description: 'The certificate password, if certificate is protected.'
   folder:
     description: 'The folder that contains the files to sign.'
     required: true

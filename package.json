@@ -1,5 +1,5 @@
 {
-  "name": "code-sign-action",
+  "name": "gha-win-code-sign",
   "version": "1.0.0",
   "description": "Sign files with a code signing certificate.",
   "main": "index.js",
@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dlemstra/code-sign-action.git"
+    "url": "git+https://github.com/elprans/gha-win-code-sign.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dlemstra/code-sign-action/issues"
+    "url": "https://github.com/elprans/gha-win-code-sign/issues"
   },
-  "homepage": "https://github.com/dlemstra/code-sign-action#readme",
+  "homepage": "https://github.com/elprans/gha-win-code-sign/issues#readme",
   "dependencies": {
     "@actions/core": "^1.2.0"
   },
